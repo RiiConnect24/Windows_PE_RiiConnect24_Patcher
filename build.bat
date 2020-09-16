@@ -147,7 +147,7 @@ md "%original_cd%\WinPE_x86\mount\RiiConnect24"
 copy "%original_cd%\source_files\curl_x86.exe" "%original_cd%\WinPE_x86\mount\RiiConnect24\curl.exe"
 
 :: Copy timeout
-copy "%original_cd%\source_files\timeout_x86.exe" "%original_cd%\WinPE_AMD64\mount\Windows\system32\timeout.exe"
+copy "%original_cd%\source_files\timeout_x86.exe" "%original_cd%\WinPE_x86\mount\Windows\system32\timeout.exe"
 
 
 :: Add .NET Framework

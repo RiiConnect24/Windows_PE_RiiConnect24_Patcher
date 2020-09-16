@@ -4,15 +4,13 @@ echo.
 echo Please wait...
 echo Initiating the preboot environment...
 wpeinit>NUL
-net start wlansvc
 echo   ...OK!
 echo.
 echo Awaiting for Ethernet to estabilish connection... 15 seconds.
 echo Press any key to skip.
 echo.
+timeout 15>NUL
 echo RiiConnect24 Patcher will start shortly...
-"x:\windows\system32\timeout" 15>NUL
-::Boot WiFi
 
 set FilesHostedOn=https://kcrPL.github.io/Patchers_Auto_Update/RiiConnect24Patcher
 cd/
@@ -25,7 +23,12 @@ cd RiiConnect24
 curl -f -L -s -S --insecure "%FilesHostedOn%/UPDATE/update_assistant.bat" --output "update_assistant.bat"
 if not %errorlevel%==0 goto 1_error_no_internet
 
-call "update_assistant.bat" -RC24_Patcher -preboot
+
+set /a version_use=0
+For /F "Delims=" %%A In ('curl -f -L -s -S --insecure "%FilesHostedOn%/UPDATE/preboot_version.txt"') do set "version_use=%%A"
+
+if %version_use%==0 call "update_assistant.bat" -RC24_Patcher -preboot
+if %version_use%==1 call "update_assistant.bat" -RC24_Patcher -preboot -beta
 
 call RiiConnect24Patcher.bat -preboot
 
