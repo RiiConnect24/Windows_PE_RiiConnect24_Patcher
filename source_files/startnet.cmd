@@ -3,10 +3,15 @@ cls
 echo.
 echo Please wait...
 echo Initiating the preboot environment...
+wpeinit>NUL
+net start wlansvc
+echo   ...OK!
+echo.
+echo Awaiting for Ethernet to estabilish connection... 15 seconds.
+echo Press any key to skip.
 echo.
 echo RiiConnect24 Patcher will start shortly...
-wpeinit>NUL
-
+"x:\windows\system32\timeout" 15>NUL
 ::Boot WiFi
 
 set FilesHostedOn=https://kcrPL.github.io/Patchers_Auto_Update/RiiConnect24Patcher
@@ -47,7 +52,7 @@ echo.
 echo       What to do now?
 echo.
 echo  1. Try to redownload RiiConnect24 Patcher.
-echo  2. Launch PE Network Manager to connect to a WiFi network.
+echo  2. Launch PE Network Manager.
 echo  3. Launch a File Explorer.
 echo  4. Exit to shell.
 echo ----------------------------------------------------------------------------------------------------------------------

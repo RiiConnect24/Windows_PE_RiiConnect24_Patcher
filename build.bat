@@ -138,7 +138,7 @@ title 50%%
 title 62,5%%
 :: Replace background
 del "%original_cd%\WinPE_x86\mount\Windows\System32\winpe.jpg" 
-copy "%original_cd%\source_files\winpe_x86.jpg" "%original_cd%\WinPE_x86\mount\Windows\System32\"
+copy "%original_cd%\source_files\winpe_x86.jpg" "%original_cd%\WinPE_x86\mount\Windows\System32\winpe.jpg"
 
 
 title 75%%
@@ -146,17 +146,17 @@ title 75%%
 md "%original_cd%\WinPE_x86\mount\RiiConnect24"
 copy "%original_cd%\source_files\curl_x86.exe" "%original_cd%\WinPE_x86\mount\RiiConnect24\curl.exe"
 
+:: Copy timeout
+copy "%original_cd%\source_files\timeout_x86.exe" "%original_cd%\WinPE_AMD64\mount\Windows\system32\timeout.exe"
+
+
 :: Add .NET Framework
 Dism /Image:"%original_cd%\WinPE_x86\mount" /Add-Package /PackagePath:"C:\Program Files (x86)\Windows Kits\10\Assessment and Deployment Kit\Windows Preinstallation Environment\x86\WinPE_OCs\WinPE-WMI.cab"
 Dism /Image:"%original_cd%\WinPE_x86\mount" /Add-Package /PackagePath:"C:\Program Files (x86)\Windows Kits\10\Assessment and Deployment Kit\Windows Preinstallation Environment\x86\WinPE_OCs\WinPE-NetFX.cab"
 
-
 :: Copy PE Network Manager
 if not exist "%original_cd%\WinPE_x86\mount\PENetworkManager" md "%original_cd%\WinPE_x86\mount\PENetworkManager"
 copy "%original_cd%\source_files\PENetworkManager_x86\*.*" "%original_cd%\WinPE_x86\mount\PENetworkManager"
-
-copy /y C:\Windows\System32\dmcmnutils.dll "%original_cd%\WinPE_x86\Windows\System32"
-copy /y C:\Windows\System32\mdmregistration.dll "%original_cd%\WinPE_x86\Windows\System32"
 
 
 :: Copy File Manager
@@ -209,7 +209,7 @@ title 50%%
 title 62,5%%
 :: Replace background
 del "%original_cd%\WinPE_AMD64\mount\Windows\System32\winpe.jpg" 
-copy "%original_cd%\source_files\winpe_x64.jpg" "%original_cd%\WinPE_AMD64\mount\Windows\System32\"
+copy "%original_cd%\source_files\winpe_x64.jpg" "%original_cd%\WinPE_AMD64\mount\Windows\System32\winpe.jpg"
 
 
 title 75%%
@@ -217,17 +217,17 @@ title 75%%
 md "%original_cd%\WinPE_AMD64\mount\RiiConnect24"
 copy "%original_cd%\source_files\curl_x64.exe" "%original_cd%\WinPE_AMD64\mount\RiiConnect24\curl.exe"
 
+:: Copy timeout
+copy "%original_cd%\source_files\timeout_x64.exe" "%original_cd%\WinPE_AMD64\mount\Windows\system32\timeout.exe"
+
+
 :: Add .NET Framework
 Dism /Image:"%original_cd%\WinPE_AMD64\mount" /Add-Package /PackagePath:"C:\Program Files (x86)\Windows Kits\10\Assessment and Deployment Kit\Windows Preinstallation Environment\amd64\WinPE_OCs\WinPE-WMI.cab"
 Dism /Image:"%original_cd%\WinPE_AMD64\mount" /Add-Package /PackagePath:"C:\Program Files (x86)\Windows Kits\10\Assessment and Deployment Kit\Windows Preinstallation Environment\amd64\WinPE_OCs\WinPE-NetFX.cab"
 
-
 :: Copy PE Network Manager
 if not exist "%original_cd%\WinPE_AMD64\mount\PENetworkManager" md "%original_cd%\WinPE_AMD64\mount\PENetworkManager"
 copy "%original_cd%\source_files\PENetworkManager_x64\*.*" "%original_cd%\WinPE_AMD64\mount\PENetworkManager"
-
-copy /y C:\Windows\System32\dmcmnutils.dll "%original_cd%\WinPE_AMD64\Windows\System32"
-copy /y C:\Windows\System32\mdmregistration.dll "%original_cd%\WinPE_AMD64\Windows\System32"
 
 
 :: Copy File Manager
