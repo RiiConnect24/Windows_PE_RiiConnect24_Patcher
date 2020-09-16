@@ -72,18 +72,25 @@ echo - curl.exe
 echo - winpe.jpg
 echo - startnet.cmd
 echo - subinacl.exe
+echo - PENetworkManager/
+echo - Total Commander
+
 echo    in source_files/ and proceed. Otherwise, you won't be able to continue.
 echo.
 pause
 
-if not exist "%original_cd%\source_files\curl.exe" goto 1_2
+if not exist "%original_cd%\source_files\curl_x86.exe" goto 1_2
+if not exist "%original_cd%\source_files\curl_x64.exe" goto 1_2
 if not exist "%original_cd%\source_files\startnet.cmd" goto 1_2
 if not exist "%original_cd%\source_files\subinacl.exe" goto 1_2
 if not exist "%original_cd%\source_files\winpe.jpg" goto 1_2
 
-goto 1_3
+goto 1_3_x86
 
-:1_3
+:1_3_x86
+
+:: building x86 image
+
 cls
 echo %header%
 echo ------------------------------------------------------------------------------------------------------------------------
@@ -117,11 +124,26 @@ copy "%original_cd%\source_files\winpe.jpg" "%original_cd%\WinPE_x86\mount\Windo
 title 75%%
 :: Copy curl
 md "%original_cd%\WinPE_x86\mount\RiiConnect24"
-copy "%original_cd%\source_files\curl.exe" "%original_cd%\WinPE_x86\mount\RiiConnect24"
+copy "%original_cd%\source_files\curl_x86.exe" "%original_cd%\WinPE_x86\mount\RiiConnect24\curl.exe"
 
 :: Add .NET Framework
 Dism /Image:"%original_cd%\WinPE_x86\mount" /Add-Package /PackagePath:"C:\Program Files (x86)\Windows Kits\10\Assessment and Deployment Kit\Windows Preinstallation Environment\x86\WinPE_OCs\WinPE-WMI.cab"
 Dism /Image:"%original_cd%\WinPE_x86\mount" /Add-Package /PackagePath:"C:\Program Files (x86)\Windows Kits\10\Assessment and Deployment Kit\Windows Preinstallation Environment\x86\WinPE_OCs\WinPE-NetFX.cab"
+
+
+:: Copy PE Network Manager
+if not exist "%original_cd%\WinPE_x86\mount\PENetworkManager" md "%original_cd%\WinPE_x86\mount\PENetworkManager"
+copy "%original_cd%\source_files\PENetworkManager_x86\*.*" "%original_cd%\WinPE_x86\mount\PENetworkManager"
+
+copy /y C:\Windows\System32\dmcmnutils.dll "%original_cd%\WinPE_x86\Windows\System32"
+copy /y C:\Windows\System32\mdmregistration.dll "%original_cd%\WinPE_x86\Windows\System32"
+
+
+:: Copy File Manager
+copy "%original_cd%\source_files\TOTALCMD_x86.exe" "%original_cd%\WinPE_x86\mount\TOTALCMD.exe"
+
+
+
 
 
 title 87,5%%
@@ -130,10 +152,80 @@ Dism /Unmount-Image /MountDir:"%original_cd%\WinPE_x86\mount" /commit
 
 title 99,9%%
 :: Create bootable
-call MakeWinPEMedia.cmd /ISO "%original_cd%\WinPE_x86" "%original_cd%\RiiConnect24 Patcher Windows PE.iso"
+echo.
+call MakeWinPEMedia.cmd /ISO "%original_cd%\WinPE_x86" "%original_cd%\RiiConnect24 Patcher Windows PE_x86.iso"
 
 title 100%%
-goto 2
+goto 1_3_x64
+
+:1_3_x64
+:: building x86 image
+
+cls
+echo %header%
+echo ------------------------------------------------------------------------------------------------------------------------
+echo.
+rmdir /s /q "%original_cd%\WinPE_AMD64"
+title 12,5%%
+:: Copy working files
+call "C:\Program Files (x86)\Windows Kits\10\Assessment and Deployment Kit\Deployment Tools\DandISetEnv.bat"
+call copype.cmd AMD64 "%original_cd%\WinPE_AMD64"
+
+title 25%%
+:: Mount image
+Dism /Mount-Image /ImageFile:%original_cd%\WinPE_AMD64\media\sources\boot.wim /index:1 /MountDir:"%original_cd%\WinPE_AMD64\mount"
+
+title 37,5%%
+:: Copy new startup script_start
+del /q "%original_cd%\WinPE_AMD64\mount\Windows\System32\StartNet.cmd"
+copy "%original_cd%\source_files\StartNet.cmd" "%original_cd%\WinPE_AMD64\mount\Windows\System32\"
+
+title 50%%
+:: Take ownership
+"%original_cd%/source_files/subinacl.exe" /file "%original_cd%\WinPE_AMD64\mount\Windows\System32\winpe.jpg" /setowner=%USERDOMAIN%\%USERNAME% "
+"%original_cd%/source_files/subinacl.exe" /file "%original_cd%\WinPE_AMD64\mount\Windows\System32\winpe.jpg" /grant=%USERDOMAIN%\%USERNAME%=F
+
+title 62,5%%
+:: Replace background
+del "%original_cd%\WinPE_AMD64\mount\Windows\System32\winpe.jpg" 
+copy "%original_cd%\source_files\winpe.jpg" "%original_cd%\WinPE_AMD64\mount\Windows\System32\"
+
+
+title 75%%
+:: Copy curl
+md "%original_cd%\WinPE_AMD64\mount\RiiConnect24"
+copy "%original_cd%\source_files\curl_x64.exe" "%original_cd%\WinPE_AMD64\mount\RiiConnect24\curl.exe"
+
+:: Add .NET Framework
+Dism /Image:"%original_cd%\WinPE_AMD64\mount" /Add-Package /PackagePath:"C:\Program Files (x86)\Windows Kits\10\Assessment and Deployment Kit\Windows Preinstallation Environment\amd64\WinPE_OCs\WinPE-WMI.cab"
+Dism /Image:"%original_cd%\WinPE_AMD64\mount" /Add-Package /PackagePath:"C:\Program Files (x86)\Windows Kits\10\Assessment and Deployment Kit\Windows Preinstallation Environment\amd64\WinPE_OCs\WinPE-NetFX.cab"
+
+
+:: Copy PE Network Manager
+if not exist "%original_cd%\WinPE_AMD64\mount\PENetworkManager" md "%original_cd%\WinPE_AMD64\mount\PENetworkManager"
+copy "%original_cd%\source_files\PENetworkManager_x86\*.*" "%original_cd%\WinPE_AMD64\mount\PENetworkManager"
+
+copy /y C:\Windows\System32\dmcmnutils.dll "%original_cd%\WinPE_AMD64\Windows\System32"
+copy /y C:\Windows\System32\mdmregistration.dll "%original_cd%\WinPE_AMD64\Windows\System32"
+
+
+:: Copy File Manager
+copy "%original_cd%\source_files\TOTALCMD_x64.exe" "%original_cd%\WinPE_AMD64\mount\TOTALCMD.exe"
+
+
+
+
+
+title 87,5%%
+:: Unmount
+Dism /Unmount-Image /MountDir:"%original_cd%\WinPE_AMD64\mount" /commit
+
+title 99,9%%
+:: Create bootable
+echo.
+call MakeWinPEMedia.cmd /ISO "%original_cd%\WinPE_AMD64" "%original_cd%\RiiConnect24 Patcher Windows PE_AMD64.iso"
+
+title 100%%
 :2
 pause
 cls
