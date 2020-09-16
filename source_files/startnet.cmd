@@ -51,7 +51,7 @@ echo  2. Launch PE Network Manager to connect to a WiFi network.
 echo  3. Launch a File Explorer.
 echo  4. Exit to shell.
 echo ----------------------------------------------------------------------------------------------------------------------
-
+echo.
 set /p s=Choose: 
 if %s%==1 goto 1
 if %s%==2 goto launch_pe

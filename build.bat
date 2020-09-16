@@ -28,7 +28,8 @@ set header=Windows PE Builder for RiiConnect24 Patcher v%version% Created by @Kc
 net session>NUL
 if not %errorlevel%==0 goto need_elevated_perms
 
-
+set /a x86_build=1
+set /a amd64_build=1
 goto 1
 :need_elevated_perms
 cls
@@ -54,11 +55,29 @@ echo Some info:
 echo Original .bat dir: %original_cd%
 echo Tools: %cd%
 echo.
-echo 1. Continue
-echo 2. Exit
+echo Build:
+if %x86_build%==1 echo 1. [X] x86 (32 bit)
+if %x86_build%==0 echo 1. [ ] x86 (32 bit)
+if %amd64_build%==1 echo 2. [X] AMD64 (64 bit)
+if %amd64_build%==0 echo 2. [ ] AMD64 (64 bit)
+
+echo.
+echo 3. Continue
+echo 4. Exit
 set /p s=Choose: 
-if %s%==1 goto 1_2
-if %s%==2 exit
+if %s%==1 goto change_86
+if %s%==2 goto change_amd64
+if %s%==3 goto 1_2
+if %s%==4 exit
+
+:change_86
+if %x86_build%==1 set /a x86_build=0&goto 1
+if %x86_build%==0 set /a x86_build=1&goto 1
+
+:change_amd64
+if %amd64_build%==1 set /a amd64_build=0&goto 1
+if %amd64_build%==0 set /a amd64_build=1&goto 1
+
 
 :1_2
 cls
@@ -83,12 +102,13 @@ if not exist "%original_cd%\source_files\curl_x86.exe" goto 1_2
 if not exist "%original_cd%\source_files\curl_x64.exe" goto 1_2
 if not exist "%original_cd%\source_files\startnet.cmd" goto 1_2
 if not exist "%original_cd%\source_files\subinacl.exe" goto 1_2
-if not exist "%original_cd%\source_files\winpe.jpg" goto 1_2
+if not exist "%original_cd%\source_files\winpe_x86.jpg" goto 1_2
+if not exist "%original_cd%\source_files\winpe_x64.jpg" goto 1_2
 
 goto 1_3_x86
 
 :1_3_x86
-
+if %x86_build%==0 goto 1_3_x64
 :: building x86 image
 
 cls
@@ -118,7 +138,7 @@ title 50%%
 title 62,5%%
 :: Replace background
 del "%original_cd%\WinPE_x86\mount\Windows\System32\winpe.jpg" 
-copy "%original_cd%\source_files\winpe.jpg" "%original_cd%\WinPE_x86\mount\Windows\System32\"
+copy "%original_cd%\source_files\winpe_x86.jpg" "%original_cd%\WinPE_x86\mount\Windows\System32\"
 
 
 title 75%%
@@ -159,6 +179,7 @@ title 100%%
 goto 1_3_x64
 
 :1_3_x64
+if %amd64_build%==0 goto 2
 :: building x86 image
 
 cls
@@ -188,7 +209,7 @@ title 50%%
 title 62,5%%
 :: Replace background
 del "%original_cd%\WinPE_AMD64\mount\Windows\System32\winpe.jpg" 
-copy "%original_cd%\source_files\winpe.jpg" "%original_cd%\WinPE_AMD64\mount\Windows\System32\"
+copy "%original_cd%\source_files\winpe_x64.jpg" "%original_cd%\WinPE_AMD64\mount\Windows\System32\"
 
 
 title 75%%
@@ -203,7 +224,7 @@ Dism /Image:"%original_cd%\WinPE_AMD64\mount" /Add-Package /PackagePath:"C:\Prog
 
 :: Copy PE Network Manager
 if not exist "%original_cd%\WinPE_AMD64\mount\PENetworkManager" md "%original_cd%\WinPE_AMD64\mount\PENetworkManager"
-copy "%original_cd%\source_files\PENetworkManager_x86\*.*" "%original_cd%\WinPE_AMD64\mount\PENetworkManager"
+copy "%original_cd%\source_files\PENetworkManager_x64\*.*" "%original_cd%\WinPE_AMD64\mount\PENetworkManager"
 
 copy /y C:\Windows\System32\dmcmnutils.dll "%original_cd%\WinPE_AMD64\Windows\System32"
 copy /y C:\Windows\System32\mdmregistration.dll "%original_cd%\WinPE_AMD64\Windows\System32"
@@ -226,8 +247,8 @@ echo.
 call MakeWinPEMedia.cmd /ISO "%original_cd%\WinPE_AMD64" "%original_cd%\RiiConnect24 Patcher Windows PE_AMD64.iso"
 
 title 100%%
-:2
 pause
+:2
 cls
 echo %header%
 echo ------------------------------------------------------------------------------------------------------------------------
