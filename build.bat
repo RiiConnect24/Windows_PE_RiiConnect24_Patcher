@@ -163,6 +163,8 @@ copy "%original_cd%\source_files\PENetworkManager_x86\*.*" "%original_cd%\WinPE_
 copy "%original_cd%\source_files\TOTALCMD_x86.exe" "%original_cd%\WinPE_x86\mount\TOTALCMD.exe"
 
 
+:: Set scratch space
+Dism /Set-ScratchSpace:256 /Image:"%original_cd%\WinPE_x86\mount"
 
 
 
