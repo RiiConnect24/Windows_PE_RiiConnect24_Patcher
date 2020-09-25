@@ -51,9 +51,13 @@ echo the RiiConnect24 Patcher.
 echo.
 echo It will help set all the files up and build the image.
 echo.
-echo Some info:
-echo Original .bat dir: %original_cd%
-echo Tools: %cd%
+echo   You will need a Windows 10 ADK installed.
+echo   https://docs.microsoft.com/en-us/windows-hardware/get-started/adk-install
+
+echo.
+echo  Some info:
+echo  Original .bat dir: %original_cd%
+echo  Tools: %cd%
 echo.
 echo Build:
 if %x86_build%==1 echo 1. [X] x86 (32 bit)
@@ -69,7 +73,7 @@ if %s%==1 goto change_86
 if %s%==2 goto change_amd64
 if %s%==3 goto 1_2
 if %s%==4 exit
-
+goto 1
 :change_86
 if %x86_build%==1 set /a x86_build=0&goto 1
 if %x86_build%==0 set /a x86_build=1&goto 1
